@@ -2,6 +2,7 @@
 class ProductsController extends AppController {
 		public $helpers = array("Html", 'Form', 'Session');
 		public $components = array('Session');
+
 		
 		function returnJson($index = 0,$message = null,$data = array()){
 			if(!empty($data)){
@@ -34,13 +35,16 @@ class ProductsController extends AppController {
 		// users can access the logic there by requesting www.example.com/posts/index
 		public function index() {
 			$this->set('products', $this->Product->find("all"));
+			
 		}
 		
 		public function add() {
 			$this->loadModel('Category');
+			$this->loadModel('cat_pro');
 			$this->set('cates', $this->Category->find("list"));
 			if ($this->request->is('post')) {	// check the request method
 				$this->Product->create();
+				$this->cat_pro->create();			
 				if ($this->Product->save($this->request->data)) {
 					$this->Session->setFlash(__('Your post has been saved.'));
 					return $this->redirect(array('action' => 'index'));
