@@ -44,7 +44,9 @@ class ProductsController extends AppController {
 			$this->set('cates', $this->Category->find("list"));
 			if ($this->request->is('post')) {	// check the request method
 				$this->Product->create();
-				$this->cat_pro->create();			
+				$this->cat_pro->create();		
+				echo($this->request->data);	
+				die;
 				if ($this->Product->save($this->request->data)) {
 					$this->Session->setFlash(__('Your post has been saved.'));
 					return $this->redirect(array('action' => 'index'));
