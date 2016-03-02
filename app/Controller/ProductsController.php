@@ -5,12 +5,14 @@ class ProductsController extends AppController {
 
 		
 		function returnJson($index = 0,$message = null,$data = array()){
-			if(!empty($data)){
-				$result = array('success' => $index,'message' => $message,'data'=>array($data));
-			}else{
-				$result = array('success' => $index,'message' => $message,'data'=>$data);
-			}
+			// if(!empty($data)){
+				// $result = array('success' => $index,'message' => $message,'data'=>array($data));
+			// }else{
+				// $result = array('success' => $index,'message' => $message,'data'=>$data);
+			// }
         
+		
+			$result = array('success' => $index,'message' => $message,'data'=>$data);
        		if(!empty($_REQUEST['callback'])){
             	echo $_REQUEST['callback'].'('.json_encode($result).')';
        	 	}else{
@@ -34,18 +36,25 @@ class ProductsController extends AppController {
 		
 		// users can access the logic there by requesting www.example.com/posts/index
 		public function index() {
-			$this->set('products', $this->Product->find("all"));
+			$products = $this->Product->find("all");
+			// echo $products;
+			// $products = $this->Product->query("SELECT * FROM products");
+			$value = array("products" => $products);
+			echo $this->returnJson(0, "success", $value);
+			die;
+			// echo $this->returnJson(0,"success",$this->Product->find("all"));
+			// $this->set('products', $this->Product->find("all"));
 			
 		}
 		
 		public function add() {
 			$this->loadModel('Category');
-			$this->loadModel('cat_pro');
+			$this->loadModel('categories_product');
 			$this->set('cates', $this->Category->find("list"));
 			if ($this->request->is('post')) {	// check the request method
 				$this->Product->create();
-				$this->cat_pro->create();		
-				echo($this->request->data);	
+				$this->categories_product->create();		
+				$this->Product->query("UPDATE `categories_products` SET `category_id`='4' WHERE `id`='3';");
 				die;
 				if ($this->Product->save($this->request->data)) {
 					$this->Session->setFlash(__('Your post has been saved.'));

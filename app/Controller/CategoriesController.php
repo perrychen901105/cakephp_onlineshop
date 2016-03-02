@@ -3,20 +3,7 @@ class CategoriesController extends AppController {
 		public $helpers = array("Html", 'Form', 'Session');
 		public $components = array('Session');
 		
-		function returnJson($index = 0,$message = null,$data = array()){
-			if(!empty($data)){
-				$result = array('success' => $index,'message' => $message,'data'=>array($data));
-			}else{
-				$result = array('success' => $index,'message' => $message,'data'=>$data);
-			}
-        
-       		if(!empty($_REQUEST['callback'])){
-            	echo $_REQUEST['callback'].'('.json_encode($result).')';
-       	 	}else{
-        		echo json_encode($result);
-        	}
-			die;
-    	}
+		
 		
 		private function saveCategory() {
 			$cate = new stdClass;
@@ -33,7 +20,11 @@ class CategoriesController extends AppController {
 		
 		// users can access the logic there by requesting www.example.com/posts/index
 		public function index() {
-			$this->set('categories', $this->Category->find("all"));
+			// $this->set('categories', $this->Category->find("all"));
+			$categories = $this->Category->find("all");
+			$value = array("categories" => $categories);
+			echo $this->returnJson(0, "success", $value);
+			die;
 		}
 		
 		public function add() {

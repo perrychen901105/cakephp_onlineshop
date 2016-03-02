@@ -33,4 +33,18 @@ App::uses('Controller', 'Controller');
  * @link		http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
+	function returnJson($index = 0,$message = null,$data = array()){
+			if(!empty($data)){
+				$result = array('success' => $index,'message' => $message,'data'=>array($data));
+			}else{
+				$result = array('success' => $index,'message' => $message,'data'=>$data);
+			}
+        
+       		if(!empty($_REQUEST['callback'])){
+            	echo $_REQUEST['callback'].'('.json_encode($result).')';
+       	 	}else{
+        		echo json_encode($result);
+        	}
+			die;
+    	}
 }
