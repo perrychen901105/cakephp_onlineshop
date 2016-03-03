@@ -36,16 +36,56 @@ class ProductsController extends AppController {
 		
 		// users can access the logic there by requesting www.example.com/posts/index
 		public function index() {
-			$products = $this->Product->find("all");
+			// $products = $this->Product->find("all");
 			// echo $products;
-			// $products = $this->Product->query("SELECT * FROM products");
+			
+			$products['Products'] = $this -> Product -> query('SELECT id,name from onlineshop.products as Product where Product.id in (select categories_products.product_id from onlineshop.categories_products where categories_products.category_id = 1);');
+
+			$this->returnJson(0,"success",$products);
+			
+			die;
+			
+			if (!$link = mysql_connect('127.0.0.1:3306', 'root', 'root')) {
+   				echo 'Could not connect to mysql';
+    			exit;
+			}
+
+			if (!mysql_select_db('onlineshop', $link)) {
+    			echo 'Could not select database';
+    			exit;
+			}
+
+			mysql_query("SET NAMES UTF8"); 
+			$cate_id = $this->request['url']['categoryId'];
+			
+			$sql    = 'SELECT * from onlineshop.products where products.id in (select categories_products.product_id from categories_products where categories_products.category_id = '.$cate_id.' );';
+			$result = mysql_query($sql, $link);
+
+			if (!$result) {
+   				 echo "DB Error, could not query the database\n";
+    			echo 'MySQL Error: ' . mysql_error();
+  	  			exit;
+			}
+			$products = array();
+			while ($row = mysql_fetch_assoc($result)) {
+				$item = array('id' => $row['id'],
+				'name' => $row['name'] );
+				$Product = array('Product' => $item);
+    			$products[] = $Product;
+			}
+
+			mysql_free_result($result);
 			$value = array("products" => $products);
 			echo $this->returnJson(0, "success", $value);
-			die;
-			// echo $this->returnJson(0,"success",$this->Product->find("all"));
-			// $this->set('products', $this->Product->find("all"));
 			
+			// $products = $this->query("SELECT * from onlineshop.products where products.id in (select categories_products.product_id from onlineshop.categories_products where categories_products.category_id = 1);");
+			// $value = array("products" => $products);
+			// echo $this->returnJson(0, "success", $value);
+			die;
 		}
+		
+		
+		
 		
 		public function add() {
 			$this->loadModel('Category');
