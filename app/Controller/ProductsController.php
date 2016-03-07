@@ -34,12 +34,19 @@ class ProductsController extends AppController {
 			die;
 		}
 		
+		public function getProductDetail() {
+			$product_id = $this->request['url']['productId'];
+			$queryStr = 'SELECT * from onlineshop.products as Product where Product.id = ' .$product_id . ';';
+			
+			$this->returnJson(0,"success", $this -> Product -> query($queryStr));
+		}
+		
 		// users can access the logic there by requesting www.example.com/posts/index
 		public function index() {
 			// $products = $this->Product->find("all");
 			// echo $products;
-			
-			$products['Products'] = $this -> Product -> query('SELECT id,name from onlineshop.products as Product where Product.id in (select categories_products.product_id from onlineshop.categories_products where categories_products.category_id = 1);');
+			$cate_id = $this->request['url']['categoryId'];
+			$products['Products'] = $this -> Product -> query('SELECT id,name from onlineshop.products as Product where Product.id in (select categories_products.product_id from onlineshop.categories_products where categories_products.category_id = '.$cate_id.' );');
 
 			$this->returnJson(0,"success",$products);
 			
