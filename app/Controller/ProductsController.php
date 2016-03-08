@@ -37,8 +37,9 @@ class ProductsController extends AppController {
 		public function getProductDetail() {
 			$product_id = $this->request['url']['productId'];
 			$queryStr = 'SELECT * from onlineshop.products as Product where Product.id = ' .$product_id . ';';
-			
-			$this->returnJson(0,"success", $this -> Product -> query($queryStr));
+			$res = $this -> Product -> query($queryStr);
+			;
+			$this->returnJson(0,"success", $res[0]);
 		}
 		
 		// users can access the logic there by requesting www.example.com/posts/index
