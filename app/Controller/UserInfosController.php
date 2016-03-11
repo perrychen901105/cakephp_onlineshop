@@ -21,7 +21,21 @@
 			$queryStr = 'SELECT * from onlineshop.products as Product where Product.id = ' .$product_id . ';';
 			$res = $this -> Product -> query($queryStr);
 			;
+			
 			$this->returnJson(0,"success", $res[0]);
+		}
+		
+		public function register() {
+			$phone = $this->request['url']['phone'];
+			$password = $this->request['url']['password'];
+			$username = $this->request['url']['username'];
+			
+			$queryStr = "INSERT INTO user_infos (phone_number, password) VALUES ('13711111121', '111111');";
+			$this->UserInfo->query($queryStr);
+			$iid = mysql_insert_id();
+			$selectStr = "SELECT count(t.id) FROM onlineshop.user_infos t;";
+			$this->returnJson(0, $iid, $this->UserInfo->query($selectStr));
+			die;
 		}
 		
 		// users can access the logic there by requesting www.example.com/posts/index
@@ -30,7 +44,7 @@
 			// echo $products;
 			$userid = $this->request['url']['phone'];
 			$queryStr = 'SELECT * from onlineshop.user_infos WHERE phone_number =  ' .$userid .';';
-			$this->returnJson(0, "success", $queryStr);
+			$this->returnJson(0, "success", $this->UserInfo->query($queryStr));
 			die;
 		}
 		
