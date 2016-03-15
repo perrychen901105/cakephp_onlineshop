@@ -25,16 +25,33 @@
 			$this->returnJson(0,"success", $res[0]);
 		}
 		
-		public function register() {
-			$phone = $this->request['url']['phone'];
-			$password = $this->request['url']['password'];
-			$username = $this->request['url']['username'];
+		public function login() {
+			$userPhone = $_POST['phone'];
+			$pwd = $_POST['password'];
 			
-			$queryStr = "INSERT INTO user_infos (phone_number, password) VALUES ('13711111121', '111111');";
-			$this->UserInfo->query($queryStr);
-			$iid = mysql_insert_id();
-			$selectStr = "SELECT count(t.id) FROM onlineshop.user_infos t;";
-			$this->returnJson(0, $iid, $this->UserInfo->query($selectStr));
+			$queryUser = 'SELECT * from onlineshop.user_infos as User where User.phone_number =' .$userPhone .' and password = ' .$pwd;
+			$res = $this->UserInfo->query($queryUser);
+			if ($res != null) {
+				$this->returnJson(0, "success", $res[0]);
+			} else {
+				echo "login again";
+			}
+			
+			die;
+		}
+		
+		public function register() {			
+			// $queryStr = "INSERT INTO user_infos (phone_number, password) VALUES ('13711111211', '111111');";
+			$whatever = array("phone_number" => $_POST['phone'],
+			"password" => $_POST['password'],
+			"user_name" => $_POST['username']);
+			// $result = $this->UserInfo->query($queryStr);
+			$result = $this->UserInfo->save($whatever);
+			$newID = $this->UserInfo->getLastInsertId();
+			$queryStr = 'SELECT * from onlineshop.user_infos as User where User.id = ' .$newID . ';';
+			$userModel = $this->UserInfo->query($queryStr);// array("userId" => $newID,"user_name" => $_POST['username'], "phone" => $_POST['phone']);
+			$returnArr = array("User" => $userModel);
+			$this->returnJson(0, "success", $userModel[0]);
 			die;
 		}
 		
