@@ -93,7 +93,12 @@ class ProductsController extends AppController {
 		}
 		
 		
-		
+		public function saveOrder() {
+			$insertStr = "INSERT INTO `onlineshop`.`orders` (`user_id`, `total_price`) VALUES ('1', '25');";
+			$str = $this->Product->query($insertStr);
+			$this->returnJson(0, "success", $str);
+			die;
+		}
 		
 		public function add() {
 			$this->loadModel('Category');
