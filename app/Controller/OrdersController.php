@@ -6,26 +6,81 @@ class OrdersController extends AppController {
 		public function saveOrder() {
 			$price = $_GET['price'];
 			$userId = $_GET['userId'];
+			$proIds = $_GET['proId'];
+			$addressId = $_GET['addressId'];
 			$curDate = strtotime('now');
-			/**
-			 * ,
-			"order_time" => strtotime('now')
-			 */
-			// $order = new stdClass;
-			// $order->user_id = $userId;
-			// $order->order_time = $curDate;
-			// $order->total_price = $price;
-			// $whatever = array("user_id" => $_GET['userId'],
-			// "total_price" => $_GET['price']);
 			$this->loadModel("Product");
-			$insertStr = "INSERT INTO `onlineshop`.`orders` (`user_id`, `total_price`, `order_time`) VALUES ('".$userId."','".$price."','".$curDate."');";
-			// $mes = $this->Order->save($order);
+			$insertStr = "INSERT INTO `onlineshop`.`orders` (`user_id`, `total_price`, `order_time`, `address_id`) VALUES ('".$userId."','".$price."','".$curDate."','".$addressId."');";
 			$mes = $this->Product->query($insertStr);
-			// $returnID = $this->Order->getLastInsertId();
-			$newID = $this->Product->getLastInsertId();
-			
-			$this->returnJson(0,$newID,$mes);
+			$queryStr = "SELECT id FROM onlineshop.orders order by id desc limit 1;";
+			$newID = $this->Product->query($queryStr);
+			$ids = split("\_", $proIds);
+			$strArr = array();
+			foreach ($ids as &$value) {
+				$str = "('".$newID[0]['orders']['id']."','".$value."')";
+				array_push($strArr, $str);
+			}
+			$valueStr = implode(',',$strArr);
+			$insertToInfoStr = "INSERT INTO `onlineshop`.`order_infos` (`order_id`, `product_id`) VALUES ".$valueStr.";";
+			$suc = $this->Product->query($insertToInfoStr);
+			$this->returnJson(0,"success",$suc);
 			die;
+		}
+		
+		public function getAllOrder() {
+			$this->loadModel("Product");
+			$queryStr = "select * from `onlineshop`.`orders`;";
+			$allOrder = $this->Product->query($queryStr);
+			$allArr = array();
+			foreach ($allOrder as $value) {
+				$oid = $value['orders']['id'];
+				$queryAddress = "SELECT * FROM onlineshop.order_addresses as address where address.id = ".$oid.";";
+				$add = $this->Product->query($queryAddress);
+				$simpleOrder = array('Order' => $value['orders'], 'Address' => $add['address'] );
+				array_push($allArr, $simpleOrder);
+			}
+			// $queryAddress = "SELECT * FROM onlineshop.order_addresses where id = 1;";
+			// $add = $this->Product->query($queryAddress);
+			// $returnValue = array('Order' => $value, 'Address' => $add);
+			$this->returnJson(0,"success",$allArr);
+			die;
+		}
+		
+		public function getOrderDetail() {
+			$this->loadModel("Product");
+			$orderId = $_GET['orderID'];
+			$queryStr = "select * from onlineshop.order_infos where order_id = ".$orderId.";";
+			$arr = $this->Product->query($queryStr);
+			$products = array();
+			foreach ($arr as $value) {
+				$productID = $value['order_infos']['product_id'];
+				$getProductStr = "SELECT id,name,original_price,imgUrl FROM onlineshop.products where id = ".$productID.";";
+				$product = $this->Product->query($getProductStr);
+				array_push($products, $product[0]);
+			}
+			$this->returnJson(0,"success",$products);
+			die;
+		}
+		
+		public function addAddress() {
+			$this->loadModel("Product");
+			$insertStr = "INSERT INTO `onlineshop`.`order_addresses` (`user_id`, `full_address`, `phone_number`) VALUES ('93', '苏州市', '13962141961');";
+			$value = $this->Product->query($insertStr);
+			$this->returnJson(0, "success", $value);
+		}
+		
+		public function getAllAddress() {
+			$this->loadModel("Product");
+			$queryStr = "SELECT * FROM onlineshop.order_addresses where user_id = 93;";
+			$value = $this->Product->query($queryStr);
+			$this->returnJson(0, "success", $value);
+		}
+		
+		public function removeAddress() {
+			$this->loadModel("Product");
+			$removeStr = "DELETE FROM `onlineshop`.`order_addresses` WHERE `id`='2';";
+			$value = $this->Product->query($removeStr);
+			$this->returnJson(0, "success", $value);
 		}
 		
 		private function getAllCategory() {
