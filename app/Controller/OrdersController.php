@@ -70,8 +70,9 @@ class OrdersController extends AppController {
 		}
 		
 		public function getAllAddress() {
+			$uid = $_POST['userId'];
 			$this->loadModel("Product");
-			$queryStr = "SELECT * FROM onlineshop.order_addresses where user_id = 93;";
+			$queryStr = "SELECT * FROM onlineshop.order_addresses where user_id = ".$uid.";";
 			$value = $this->Product->query($queryStr);
 			$this->returnJson(0, "success", $value);
 		}
