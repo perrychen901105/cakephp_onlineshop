@@ -4,10 +4,10 @@ class OrdersController extends AppController {
 		public $components = array('Session');
 		
 		public function saveOrder() {
-			$price = $_GET['price'];
-			$userId = $_GET['userId'];
-			$proIds = $_GET['proId'];
-			$addressId = $_GET['addressId'];
+			$price = $_POST['price'];
+			$userId = $_POST['userId'];
+			$proIds = $_POST['proId'];
+			$addressId = $_POST['addressId'];
 			$curDate = strtotime('now');
 			$this->loadModel("Product");
 			$insertStr = "INSERT INTO `onlineshop`.`orders` (`user_id`, `total_price`, `order_time`, `address_id`) VALUES ('".$userId."','".$price."','".$curDate."','".$addressId."');";
@@ -29,14 +29,16 @@ class OrdersController extends AppController {
 		
 		public function getAllOrder() {
 			$this->loadModel("Product");
-			$queryStr = "select * from `onlineshop`.`orders`;";
+			$queryStr = "select * from `onlineshop`.`orders` where user_id = 93;";
 			$allOrder = $this->Product->query($queryStr);
 			$allArr = array();
 			foreach ($allOrder as $value) {
-				$oid = $value['orders']['id'];
+				// echo $value['orders']['address_id'];
+				$oid = $value['orders']['address_id'];
 				$queryAddress = "SELECT * FROM onlineshop.order_addresses as address where address.id = ".$oid.";";
 				$add = $this->Product->query($queryAddress);
-				$simpleOrder = array('Order' => $value['orders'], 'Address' => $add['address'] );
+				// echo $add;
+				$simpleOrder = array('Order' => $value['orders'], 'Address' => $add[0]['address'] );
 				array_push($allArr, $simpleOrder);
 			}
 			// $queryAddress = "SELECT * FROM onlineshop.order_addresses where id = 1;";
@@ -64,7 +66,11 @@ class OrdersController extends AppController {
 		
 		public function addAddress() {
 			$this->loadModel("Product");
-			$insertStr = "INSERT INTO `onlineshop`.`order_addresses` (`user_id`, `full_address`, `phone_number`) VALUES ('93', '苏州市', '13962141961');";
+			$uid = $_POST['uid'];
+			$receiver = $_POST['receiver'];
+			$phone = $_POST['phone'];
+			$address = $_POST['address'];
+			$insertStr = "INSERT INTO `onlineshop`.`order_addresses` (`user_id`, `full_address`, `phone_number`, `receiver`) VALUES ('".$uid."', '".$address."', '".$phone."','".$receiver."');";
 			$value = $this->Product->query($insertStr);
 			$this->returnJson(0, "success", $value);
 		}
@@ -79,7 +85,8 @@ class OrdersController extends AppController {
 		
 		public function removeAddress() {
 			$this->loadModel("Product");
-			$removeStr = "DELETE FROM `onlineshop`.`order_addresses` WHERE `id`='2';";
+			$addressID = $_POST['aid'];
+			$removeStr = "DELETE FROM `onlineshop`.`order_addresses` WHERE `id`='".$addressID."';";
 			$value = $this->Product->query($removeStr);
 			$this->returnJson(0, "success", $value);
 		}

@@ -47,11 +47,13 @@ class ProductsController extends AppController {
 			// $products = $this->Product->find("all");
 			// echo $products;
 			$cate_id = $this->request['url']['categoryId'];
-			$products['Products'] = $this -> Product -> query('SELECT id,name from onlineshop.products as Product where Product.id in (select categories_products.product_id from onlineshop.categories_products where categories_products.category_id = '.$cate_id.' );');
+			$products['Products'] = $this -> Product -> query('SELECT id,name,specification,original_price,imgUrl from onlineshop.products as Product where Product.id in (select categories_products.product_id from onlineshop.categories_products where categories_products.category_id = '.$cate_id.' );');
 
 			$this->returnJson(0,"success",$products);
 			
 			die;
+			
+			// not used
 			
 			if (!$link = mysql_connect('127.0.0.1:3306', 'root', 'root')) {
    				echo 'Could not connect to mysql';
