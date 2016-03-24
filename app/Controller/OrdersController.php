@@ -64,6 +64,16 @@ class OrdersController extends AppController {
 			die;
 		}
 		
+		public function removeOrder() {
+			$this->loadModel("Product");
+			$orderId = $_POST['orderID'];
+			$deleteOrderDetailStr = "DELETE FROM `onlineshop`.`order_infos` WHERE `order_id`='".$orderId."';";
+			$deleteOrderStr = "DELETE FROM `onlineshop`.`orders` WHERE `id`='".$orderId."';";
+			$this->Product->query($deleteOrderDetailStr);
+			$returnValue = $this->Product->query($deleteOrderStr);
+			$this->returnJson(0,"success",$returnValue);
+		}
+		
 		public function addAddress() {
 			$this->loadModel("Product");
 			$uid = $_POST['uid'];
